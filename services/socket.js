@@ -1,4 +1,14 @@
+const { socketActions } = require('../constant');
 const BandList = require('./band-list');
+
+const {
+  ON_CONNECTION,
+  CURRENT_BANDS,
+  VOTE_BANDS,
+  ADD_BAND,
+  CHANGE_BAND_NAME,
+  DELETE_BAND,
+} = socketActions;
 
 class Sockets {
   constructor(io) {
@@ -8,28 +18,28 @@ class Sockets {
   }
 
   socketEvents() {
-    this.io.on('connection', (socket) => {
+    this.io.on(ON_CONNECTION, (socket) => {
       // eslint-disable-next-line no-console
       console.log('connected');
 
       // emit all bands
-      socket.emit('current-bands', this.bandList.getBands());
+      socket.emit(CURRENT_BANDS, this.bandList.getBands());
 
-      socket.on('vote-band', ({ id }) => {
+      socket.on(VOTE_BANDS, ({ id }) => {
         this.bandList.increaseVote(id);
-        this.io.emit('current-bands', this.bandList.getBands());
+        this.io.emit(CURRENT_BANDS, this.bandList.getBands());
       });
-      socket.on('delete-band', ({ id }) => {
+      socket.on(DELETE_BAND, ({ id }) => {
         this.bandList.deleteBand(id);
-        this.io.emit('current-bands', this.bandList.getBands());
+        this.io.emit(CURRENT_BANDS, this.bandList.getBands());
       });
-      socket.on('change-name', ({ id, name }) => {
+      socket.on(CHANGE_BAND_NAME, ({ id, name }) => {
         this.bandList.changeBandName(id, name);
-        this.io.emit('current-bands', this.bandList.getBands());
+        this.io.emit(CURRENT_BANDS, this.bandList.getBands());
       });
-      socket.on('add-band', ({ name }) => {
+      socket.on(ADD_BAND, ({ name }) => {
         this.bandList.addBand(name);
-        this.io.emit('current-bands', this.bandList.getBands());
+        this.io.emit(CURRENT_BANDS, this.bandList.getBands());
       });
     });
   }
